@@ -1,0 +1,59 @@
+{
+	"pluginAlias": "VirtualFilterMaintenance",
+	"pluginType": "platform",
+	"singular": true,
+	"headerDisplay": "Homebridge plugin for devices using the Tuya Web API.",
+	"schema": {
+		"type": "object",
+		"properties": {
+			"name": {
+				"title": "Plugin Name",
+				"type": "string",
+				"required": true,
+				"default": "VirtualFilterMaintenance",
+				"description": "You shouldn't need to change this."
+			},
+			"filters": {
+				"title": "Filters",
+				"description": "Enable WeatherFlow Tempest Sensors.",
+				"type": "array",
+				"buttonText": "Add Filter",
+				"items": {
+                    "type": "object",
+                    "properties": {
+						"filter-name": {
+							"title": "Filter Name",
+							"type": "string",
+							"required": true,
+							"default": "Filter"
+						},
+						"id": {
+							"title": "Unique ID",
+							"type": "string",
+							"required": true,
+							"description" : "Device serial number or a string of random characters."
+						},
+						"duration": {
+							"title": "Duration",
+							"type": "string",
+							"required": true,
+							"default": "3m",
+							"description": "0y 0m 0d 0h"
+						},
+						"device-type": {
+							"title": "Device Type",
+							"type": "string",
+							"default": "filter",
+							"oneOf": [
+								{ "title": "Filter Maintenance", "enum": ["filter"] },
+								{ "title": "Air Purifier", "enum": ["purifier"] },
+								{ "title": "Button", "enum": ["button"] }
+							],
+							"required": true
+						}
+					}
+				}
+			}
+		}
+	}
+}
