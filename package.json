@@ -14,7 +14,8 @@
   },
   "files": [
     "config.schema.json",
-    "LICENSE"
+    "LICENSE",
+    "lib"
   ],
   "engines": {
     "node": ">=14.18.1",
