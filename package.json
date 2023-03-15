@@ -1,7 +1,7 @@
 {
   "displayName": "Virtual Filter Maintenance",
   "name": "homebridge-virtual-filtermaintenance",
-  "version": "0.0.3",
+  "version": "0.0.3c",
   "description": "A simple timer for filter replacement or cleaning schedule.",
   "license": "ISC",
   "author": "Benjamin A. Cooper <CrazyMonkeyBen@gmail.com>",
