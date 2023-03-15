@@ -2,7 +2,7 @@
 	"pluginAlias": "VirtualFilterMaintenance",
 	"pluginType": "platform",
 	"singular": true,
-	"headerDisplay": "Homebridge plugin for devices using the Tuya Web API.",
+	"headerDisplay": "Homebridge plugin for virtual filter timers",
 	"schema": {
 		"type": "object",
 		"properties": {
@@ -15,7 +15,7 @@
 			},
 			"filters": {
 				"title": "Filters",
-				"description": "Enable WeatherFlow Tempest Sensors.",
+				"description": "List of filters",
 				"type": "array",
 				"buttonText": "Add Filter",
 				"items": {
