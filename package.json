@@ -1,7 +1,7 @@
 {
   "displayName": "Virtual Filter Maintenance",
   "name": "homebridge-virtual-filtermaintenance",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A simple timer for filter replacement or cleaning schedule.",
   "license": "ISC",
   "author": "Benjamin A. Cooper <CrazyMonkeyBen@gmail.com>",
@@ -12,6 +12,10 @@
   "bugs": {
     "url": "https://github.com/CrazyMonkeyBen/homebridge-virtual-filtermaintenance/issues"
   },
+  "files": [
+    "config.schema.json",
+    "LICENSE"
+  ],
   "engines": {
     "node": ">=14.18.1",
     "homebridge": ">=1.3.5"
@@ -27,6 +31,7 @@
     "homebridge-plugin",
     "filter",
     "whole house water filter",
+    "dummy filter",
     "periodic maintenance"
   ],
   "dependencies": {},
