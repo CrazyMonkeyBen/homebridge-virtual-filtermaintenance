@@ -1,7 +1,7 @@
 {
   "displayName": "Virtual Filter Maintenance",
   "name": "homebridge-virtual-filtermaintenance",
-  "version": "0.0.5",
+  "version": "0.1.1",
   "description": "A simple timer for filter replacement or cleaning schedule.",
   "license": "ISC",
   "author": "Benjamin A. Cooper <CrazyMonkeyBen@gmail.com>",
@@ -24,7 +24,7 @@
   "main": "dist/index.js",
   "scripts": {
     "lint": "eslint src/**.ts --max-warnings=0",
-    "watch": "npm run build && npm link && nodemon",
+    "watch": "npm run build  && nodemon",
     "build": "rimraf ./dist && tsc",
     "prepublishOnly": "npm run lint && npm run build"
   },
@@ -35,7 +35,6 @@
     "dummy filter",
     "periodic maintenance"
   ],
-  "dependencies": {},
   "devDependencies": {
     "@types/node": "^16.10.9",
     "@typescript-eslint/eslint-plugin": "^5.0.0",

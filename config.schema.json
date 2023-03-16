@@ -50,6 +50,18 @@
 								{ "title": "Button", "enum": ["button"] }
 							],
 							"required": true
+                        "sensor-type": {
+                            "title": "Sensor Type",
+                            "type": "string",
+                            "default": "none",
+                            "oneOf": [
+								{ "title": "None", "enum": ["none"] }, 
+                                { "title": "Contact Switch", "enum": ["contact"] },
+                                { "title": "Motion Sensor", "enum": ["motion"] },
+                                { "title": "Occupancy Sensor", "enum": ["occupancy"] }
+                            ],
+							"required": false,
+							"description": "Optional sensor type to trigger when filter expires" 
 						}
 					}
 				}

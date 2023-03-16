@@ -50,6 +50,26 @@ the filter.
 This emulates a stateless switch with no functionality. It has similar behaviour as the air purifier in both apps, but 
 without the clutter in your climate device summary.
 
+## Sensor Types
+
+A sensor can optionally be included with the the device. This provides more options for automations, and enables the
+Apple Home app to send notifications on your phone when the filter timer expires. Sensor status can also be shown in
+the Security summary. Each type of sensor has slightly different behavior. Contact Sensor is generally the most usable.
+
+### Sensor Status Values
+
+The status of the sensors does not map directly to an obvious condition for your filters. Here is a table of some status
+strings you may see in the various apps and what they mean for your filter.
+
+|Dirty             |Clean         |
+|------------------|--------------|
+|Needed            |Not Needed    |
+|No                |Yes           |
+|Open              |Closed        |
+|Motion Detected   |Not Detected  |
+|Motion            |Clear         |
+|Occupancy Detected|Occupancy None|
+|Home              |Away          |
 
 ## Configuration
 

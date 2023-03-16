@@ -8,61 +8,11 @@ import { VirtualFilterPlatform } from './platform';
  * Each accessory may expose multiple services of different service types.
  */
 export class VirtualFilterAccessory {
-  private service: Service;
-
-
+  private filterService: Service;
+  private sensorService;
+  
   constructor (private readonly platform: VirtualFilterPlatform,
          private readonly accessory: PlatformAccessory) {
-    // set accessory information
-    this.accessory.getService(this.platform.Service.AccessoryInformation)!
-      .setCharacteristic(this.platform.Characteristic.Manufacturer, 'Virtual Filter')
-      .setCharacteristic(this.platform.Characteristic.Model,
-        accessory.context.deviceConfig['device-type'] + ' - ' + accessory.context.deviceConfig['duration'])
-      .setCharacteristic(this.platform.Characteristic.SerialNumber, 'VFM-' + accessory.context.deviceConfig['id']);
-
-    // get the service if it exists, otherwise create a new service
-    if (accessory.context.deviceConfig['device-type'] === 'button') {
-      this.service = this.accessory.getService(this.platform.Service.StatelessProgrammableSwitch) ||
-            this.accessory.addService(this.platform.Service.StatelessProgrammableSwitch);
-
-      this.service.getCharacteristic(this.platform.Characteristic.ProgrammableSwitchEvent)
-        .onGet(this.getDummy.bind(this));
-    } else if (accessory.context.deviceConfig['device-type'] === 'purifier') {
-      this.service = this.accessory.getService(this.platform.Service.AirPurifier) ||
-          this.accessory.addService(this.platform.Service.AirPurifier);
-
-      this.service.getCharacteristic(this.platform.Characteristic.Active)
-        .onSet(this.setDummy.bind(this));
-
-      this.service.getCharacteristic(this.platform.Characteristic.Active)
-        .onGet(this.getDummy.bind(this));
-
-      this.service.getCharacteristic(this.platform.Characteristic.CurrentAirPurifierState)
-        .onGet(this.getDummy.bind(this));
-
-      this.service.getCharacteristic(this.platform.Characteristic.TargetAirPurifierState)
-        .onGet(this.getDummy.bind(this));
-    } else {
-      this.service = this.accessory.getService(this.platform.Service.FilterMaintenance) ||
-          this.accessory.addService(this.platform.Service.FilterMaintenance);
-    }
-
-    // set the service name, this is what is displayed as the default name on the Home app
-    this.service.setCharacteristic(this.platform.Characteristic.Name, accessory.context.deviceConfig['filter-name']);
-    this.accessory.displayName = accessory.context.deviceConfig['filter-name'];
-
-    // register handlers for the Filter Change Indication Characteristic
-    this.service.getCharacteristic(this.platform.Characteristic.FilterChangeIndication)
-      .onGet(this.getFilterChangeIndication.bind(this));
-
-    // register handlers for the Filter Life Level Characteristic
-    this.service.getCharacteristic(this.platform.Characteristic.FilterLifeLevel)
-      .onGet(this.getFilterLifeLevel.bind(this));
-
-    // register handlers for the Reset Filter Indication Characteristic
-    this.service.getCharacteristic(this.platform.Characteristic.ResetFilterIndication)
-      .onSet(this.setResetFilterIndication.bind(this));
-
 
     // Calculate Durration from config
     const durationString = accessory.context.deviceConfig['duration'].trim().toLowerCase();
@@ -124,36 +74,164 @@ export class VirtualFilterAccessory {
     }
 
     this.calculateDuration();
-  }
 
-  //tsignore
-  async setDummy (value: CharacteristicValue) {
-    // Do nothing on set command
-    this.platform.log.debug('Set ', value);
+
+    // set accessory information
+    this.accessory.getService(this.platform.Service.AccessoryInformation)!
+      .setCharacteristic(this.platform.Characteristic.Manufacturer, 'Virtual Filter')
+      .setCharacteristic(this.platform.Characteristic.Model,
+        accessory.context.deviceConfig['device-type'] + ' - ' + accessory.context.deviceConfig['duration'])
+      .setCharacteristic(this.platform.Characteristic.SerialNumber, 'VFM-' + accessory.context.deviceConfig['id']);
+
+    // get the filterService if it exists, otherwise create a new service
+    if (accessory.context.deviceConfig['device-type'] === 'button') {
+      this.filterService = this.accessory.getService(this.platform.Service.StatelessProgrammableSwitch) ||
+            this.accessory.addService(this.platform.Service.StatelessProgrammableSwitch);
+
+      this.filterService.getCharacteristic(this.platform.Characteristic.ProgrammableSwitchEvent)
+        .onGet(this.getDummy.bind(this));
+    } else if (accessory.context.deviceConfig['device-type'] === 'purifier') {
+      this.filterService = this.accessory.getService(this.platform.Service.AirPurifier) ||
+          this.accessory.addService(this.platform.Service.AirPurifier);
+
+      this.filterService.getCharacteristic(this.platform.Characteristic.Active)
+        .onSet(this.setDummy.bind(this));
+
+      this.filterService.getCharacteristic(this.platform.Characteristic.Active)
+        .onGet(this.getDummy.bind(this));
+
+      this.filterService.getCharacteristic(this.platform.Characteristic.CurrentAirPurifierState)
+        .onGet(this.getDummy.bind(this));
+
+      this.filterService.getCharacteristic(this.platform.Characteristic.TargetAirPurifierState)
+        .onGet(this.getDummy.bind(this));
+    } else {
+      this.filterService = this.accessory.getService(this.platform.Service.FilterMaintenance) ||
+          this.accessory.addService(this.platform.Service.FilterMaintenance);
+    }
+
+    // set the service name, this is what is displayed as the default name on the Home app
+    this.filterService.setCharacteristic(this.platform.Characteristic.Name, accessory.context.deviceConfig['filter-name']);
+    this.accessory.displayName = accessory.context.deviceConfig['filter-name'];
+
+    // register handlers for the Filter Change Indication Characteristic
+    this.filterService.getCharacteristic(this.platform.Characteristic.FilterChangeIndication)
+      .onGet(this.getFilterChangeIndication.bind(this));
+
+    // register handlers for the Filter Life Level Characteristic
+    this.filterService.getCharacteristic(this.platform.Characteristic.FilterLifeLevel)
+      .onGet(this.getFilterLifeLevel.bind(this));
+
+    // register handlers for the Reset Filter Indication Characteristic
+    this.filterService.getCharacteristic(this.platform.Characteristic.ResetFilterIndication)
+      .onSet(this.setResetFilterIndication.bind(this));
+
+
+    // get the sensorService if it exists, otherwise create a new service
+    if (accessory.context.deviceConfig['sensor-type'] === 'contact') {
+      this.sensorService = this.accessory.getService(this.platform.Service.ContactSensor) ||
+            this.accessory.addService(this.platform.Service.ContactSensor);
+
+      this.sensorService.getCharacteristic(this.platform.Characteristic.ContactSensorState)
+        .onGet(this.getSensorState.bind(this));
+
+      // Set polling timer to update sensor value
+      setInterval(this.updateContactSensorState.bind(this), 1800000);
+    } else if (accessory.context.deviceConfig['sensor-type'] === 'motion') {
+      this.sensorService = this.accessory.getService(this.platform.Service.MotionSensor) ||
+            this.accessory.addService(this.platform.Service.MotionSensor);
+
+      this.sensorService.getCharacteristic(this.platform.Characteristic.MotionDetected)
+        .onGet(this.getSensorState.bind(this));
+
+      // Set polling timer to update sensor value
+      setInterval(this.updateMotionSensorState.bind(this), 1800000);
+    } else if (accessory.context.deviceConfig['sensor-type'] === 'occupancy') {
+      this.sensorService = this.accessory.getService(this.platform.Service.OccupancySensor) ||
+            this.accessory.addService(this.platform.Service.OccupancySensor);
+
+      this.sensorService.getCharacteristic(this.platform.Characteristic.OccupancyDetected)
+        .onGet(this.getSensorState.bind(this));
+
+      // Set polling timer to update sensor value
+      setInterval(this.updateOccupancySensorState.bind(this), 1800000);
+    } else {
+      this.sensorService = null;
+    }
+
   }
 
   async getDummy (): Promise<CharacteristicValue> {
     // return nothing on get command
-    this.platform.log.debug('Get');
+    this.platform.log.debug('Get Dummy');
 
     return 0;
   }
 
+  async setDummy (value: CharacteristicValue) {
+    // Do nothing on set command
+    this.platform.log.debug('Set Dummy', value);
+  }
+
 
   async getFilterChangeIndication (): Promise<CharacteristicValue> {
-    this.platform.log.debug(this.accessory.displayName, 'Indication');
+    this.platform.log.debug(this.accessory.displayName, 'Get Filter Indication');
     return this.calculateFilterLife()[0];
   }
 
+  async setResetFilterIndication (value: CharacteristicValue) {
+    this.platform.log.debug('Reset Filter ', value);
+    this.resetTimer();
+
+    setTimeout(this.updateFilterValues.bind(this), 1000);
+  }
+
   async getFilterLifeLevel (): Promise<CharacteristicValue> {
-    this.platform.log.debug(this.accessory.displayName, 'LifeLevel');
+    this.platform.log.debug(this.accessory.displayName, 'Get Filter LifeLevel');
     return this.calculateFilterLife()[1];
   }
 
-  async setResetFilterIndication (value: CharacteristicValue) {
-    this.platform.log.debug('Reset ', value);
-    this.resetTimer();
+
+  async getSensorState (): Promise<CharacteristicValue> {
+    this.platform.log.debug(this.accessory.displayName, 'Get Sensor State');
+    return this.calculateFilterLife()[0];
   }
+
+
+  updateContactSensorState () {
+    this.platform.log.debug(this.accessory.displayName, 'Update Contact State');
+    this.sensorService.getCharacteristic(this.platform.Characteristic.ContactSensorState)
+        .updateValue(this.calculateFilterLife()[0]);
+    this.updateFilterValues();
+  }
+
+  updateMotionSensorState () {
+    this.platform.log.debug(this.accessory.displayName, 'Update Motion State');
+    this.sensorService.getCharacteristic(this.platform.Characteristic.MotionDetected)
+        .updateValue(this.calculateFilterLife()[0]);
+    this.updateFilterValues();
+  }
+
+  updateOccupancySensorState () {
+    this.platform.log.debug(this.accessory.displayName, 'Update Occupancy State');
+    this.sensorService.getCharacteristic(this.platform.Characteristic.OccupancyDetected)
+        .updateValue(this.calculateFilterLife()[0]);
+    this.updateFilterValues();
+  }
+
+
+  updateFilterValues () {
+    const filterLife = this.calculateFilterLife();
+
+    this.platform.log.debug(this.accessory.displayName, 'Update Values: Expired:', filterLife[0], ' Life:', filterLife[1]);
+
+    this.filterService.getCharacteristic(this.platform.Characteristic.FilterLifeLevel)
+        .updateValue(filterLife[1]);
+
+    this.filterService.getCharacteristic(this.platform.Characteristic.FilterChangeIndication)
+        .updateValue(filterLife[0]);
+  }
+
 
   calculateFilterLife () {
     const currentTime = Date.now();
@@ -183,7 +261,7 @@ export class VirtualFilterAccessory {
     endTime.setDate(endTime.getDate() + +this.accessory.context.durationValues[2]);
     endTime.setHours(endTime.getHours() + +this.accessory.context.durationValues[3]);
     this.accessory.context.endTime = endTime.getTime();
-    this.accessory.context.duration = endTime.getTime() - startTimeMS;
+    this.accessory.context.duration = 30000;//endTime.getTime() - startTimeMS;
 
     this.platform.log.debug(this.accessory.displayName, 'Calculate Duration, New Start -> ', new Date(startTimeMS));
     this.platform.log.debug(this.accessory.displayName, 'Calculate Duration, New End -> ', endTime);
