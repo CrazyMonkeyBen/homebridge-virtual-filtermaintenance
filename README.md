@@ -97,13 +97,15 @@ strings you may see in the various apps and what they mean for your filter.
           "filter-name": "Purifier Filter",
           "id": "2",
           "duration": "1y 6m",
-          "device-type": "purifier"
+          "device-type": "purifier",
+          "sensor-type": "contact"
         },
         {
           "filter-name": "Button Filter",
           "id": "3",
           "duration": "7d12h",
-          "device-type": "button"
+          "device-type": "button",
+          "sensor-type": "occupancy"
         }
       ],
       "platform": "VirtualFilterMaintenance"
