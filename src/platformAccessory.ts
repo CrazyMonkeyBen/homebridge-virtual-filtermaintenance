@@ -11,7 +11,7 @@ export class VirtualFilterAccessory {
   private filterService: Service;
   private sensorService;
   private sensorCharacteristic;
-  
+
   constructor (private readonly platform: VirtualFilterPlatform,
          private readonly accessory: PlatformAccessory) {
 
@@ -216,10 +216,10 @@ export class VirtualFilterAccessory {
     this.platform.log.debug(this.accessory.displayName, 'Update Values: Expired:', filterLife[0], ' Life:', filterLife[1]);
 
     this.filterService.getCharacteristic(this.platform.Characteristic.FilterLifeLevel)
-        .updateValue(filterLife[1]);
+      .updateValue(filterLife[1]);
 
     this.filterService.getCharacteristic(this.platform.Characteristic.FilterChangeIndication)
-        .updateValue(filterLife[0]);
+      .updateValue(filterLife[0]);
   }
 
 
