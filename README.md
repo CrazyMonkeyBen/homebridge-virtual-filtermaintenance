@@ -80,6 +80,7 @@ strings you may see in the various apps and what they mean for your filter.
 - **id**: Must be unique amongst all the filters. Can be any length, letters or numbers
 - **duration**: Maintenance interval in Years, Months, Days, Hours. "1y 2m 3d 4h"
 - **device-type** "filter", "purifier", or "button"
+- **sensor-type** "contact", "motion", or "occupancy"
 
 ```json
 {
