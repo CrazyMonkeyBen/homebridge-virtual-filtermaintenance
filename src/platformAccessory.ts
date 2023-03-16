@@ -10,6 +10,7 @@ import { VirtualFilterPlatform } from './platform';
 export class VirtualFilterAccessory {
   private filterService: Service;
   private sensorService;
+  private sensorCharacteristic;
   
   constructor (private readonly platform: VirtualFilterPlatform,
          private readonly accessory: PlatformAccessory) {
@@ -135,8 +136,7 @@ export class VirtualFilterAccessory {
       this.sensorService.getCharacteristic(this.platform.Characteristic.ContactSensorState)
         .onGet(this.getSensorState.bind(this));
 
-      // Set polling timer to update sensor value
-      setInterval(this.updateContactSensorState.bind(this), 1800000);
+      this.sensorCharacteristic = this.sensorService.getCharacteristic(this.platform.Characteristic.ContactSensorState);
     } else if (accessory.context.deviceConfig['sensor-type'] === 'motion') {
       this.sensorService = this.accessory.getService(this.platform.Service.MotionSensor) ||
             this.accessory.addService(this.platform.Service.MotionSensor);
@@ -144,8 +144,7 @@ export class VirtualFilterAccessory {
       this.sensorService.getCharacteristic(this.platform.Characteristic.MotionDetected)
         .onGet(this.getSensorState.bind(this));
 
-      // Set polling timer to update sensor value
-      setInterval(this.updateMotionSensorState.bind(this), 1800000);
+      this.sensorCharacteristic = this.sensorService.getCharacteristic(this.platform.Characteristic.MotionDetected);
     } else if (accessory.context.deviceConfig['sensor-type'] === 'occupancy') {
       this.sensorService = this.accessory.getService(this.platform.Service.OccupancySensor) ||
             this.accessory.addService(this.platform.Service.OccupancySensor);
@@ -153,10 +152,15 @@ export class VirtualFilterAccessory {
       this.sensorService.getCharacteristic(this.platform.Characteristic.OccupancyDetected)
         .onGet(this.getSensorState.bind(this));
 
-      // Set polling timer to update sensor value
-      setInterval(this.updateOccupancySensorState.bind(this), 1800000);
+      this.sensorCharacteristic = this.sensorService.getCharacteristic(this.platform.Characteristic.OccupancyDetected);
     } else {
       this.sensorService = null;
+      this.sensorCharacteristic = null;
+    }
+
+    // Set polling timer to update sensor value
+    if (this.sensorCharacteristic) {
+      setInterval(this.updateSensorState.bind(this), 300000); // 5 minutes
     }
 
   }
@@ -183,7 +187,7 @@ export class VirtualFilterAccessory {
     this.platform.log.debug('Reset Filter ', value);
     this.resetTimer();
 
-    setTimeout(this.updateFilterValues.bind(this), 1000);
+    setTimeout(this.updateSensorState.bind(this), 1000);
   }
 
   async getFilterLifeLevel (): Promise<CharacteristicValue> {
@@ -198,27 +202,13 @@ export class VirtualFilterAccessory {
   }
 
 
-  updateContactSensorState () {
-    this.platform.log.debug(this.accessory.displayName, 'Update Contact State');
-    this.sensorService.getCharacteristic(this.platform.Characteristic.ContactSensorState)
-        .updateValue(this.calculateFilterLife()[0]);
+  updateSensorState () {
+    this.platform.log.debug(this.accessory.displayName, 'Update Sensor State');
+    if (this.sensorCharacteristic) {
+      this.sensorCharacteristic.updateValue(this.calculateFilterLife()[0]);
+    }
     this.updateFilterValues();
   }
-
-  updateMotionSensorState () {
-    this.platform.log.debug(this.accessory.displayName, 'Update Motion State');
-    this.sensorService.getCharacteristic(this.platform.Characteristic.MotionDetected)
-        .updateValue(this.calculateFilterLife()[0]);
-    this.updateFilterValues();
-  }
-
-  updateOccupancySensorState () {
-    this.platform.log.debug(this.accessory.displayName, 'Update Occupancy State');
-    this.sensorService.getCharacteristic(this.platform.Characteristic.OccupancyDetected)
-        .updateValue(this.calculateFilterLife()[0]);
-    this.updateFilterValues();
-  }
-
 
   updateFilterValues () {
     const filterLife = this.calculateFilterLife();
@@ -261,7 +251,7 @@ export class VirtualFilterAccessory {
     endTime.setDate(endTime.getDate() + +this.accessory.context.durationValues[2]);
     endTime.setHours(endTime.getHours() + +this.accessory.context.durationValues[3]);
     this.accessory.context.endTime = endTime.getTime();
-    this.accessory.context.duration = 30000;//endTime.getTime() - startTimeMS;
+    this.accessory.context.duration = endTime.getTime() - startTimeMS;
 
     this.platform.log.debug(this.accessory.displayName, 'Calculate Duration, New Start -> ', new Date(startTimeMS));
     this.platform.log.debug(this.accessory.displayName, 'Calculate Duration, New End -> ', endTime);

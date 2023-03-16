@@ -50,6 +50,7 @@
 								{ "title": "Button", "enum": ["button"] }
 							],
 							"required": true
+						},
                         "sensor-type": {
                             "title": "Sensor Type",
                             "type": "string",

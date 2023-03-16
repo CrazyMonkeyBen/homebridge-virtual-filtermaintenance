@@ -1,4 +1,4 @@
-### 0.1.1
+### 0.1.0
 * Added contact, motion and occupancy sensor options to the filter devices.
 * fixed some bugs with filter state
 
